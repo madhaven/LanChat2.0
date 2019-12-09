@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta title="author" content="Jitin J Gigi">
+    <title>LanChat 2.0</title>
+    <style>
+        *{
+            font-family: Helvetica;
+            border:0;
+            margin:0;
+        }
+        .maindiv{
+            background-color:#eee;
+            height:100%;
+            min-height: 100vh;
+            width:100vw;
+            overflow:none;
+        }
+        .panel{
+            position:fixed;
+            left:50%;
+            top:50%;
+            transform:translate(-50%, -50%);
+            background-color:white;
+            border-radius:0.25em;
+            box-shadow: 0 0 8px 0 rgba(0,0,0,0.5);
+            padding:1em;
+        }
+    </style>
+    <script>
+        var username = "";
+        var count = 0;
+        function getusername(){
+            username = window.prompt("Enter a username : ");
+            if (!username) getusername();
+            else send(username);
+        }
+        function send(name, message=''){
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', 'http://192.168.43.219:45566/back', true, username);
+            console.log(xhr);
+            if (message) xhr.send('1<<'+name+'>><<'+message+'>>');
+            else xhr.send('0<<'+name+'>>');
+            count++;
+        }
+    </script>
+</head>
+<body>
+    <div class="maindiv">
+        <div class="panel">   
+            <button onclick ="send(username);">CLICK ME</button>
+            <a href='close'>Close server</a>
+        </div>
+    </div>
+    <script>getusername();</script>
+</body>
+</html>
