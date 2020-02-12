@@ -30,43 +30,41 @@ Content-Type: text/html
     "<html><body>ayyo 404 adich moonchiyallo</body></html>"]
     
     def respond(sock, reqpage, reqdata=None):
-        switchoff = False;
-        if reqpage == '': reqpage = 'knock'
+        switchoff, resp = False, heads;
+        if not reqpage : reqpage = 'knock'
+        
         if reqpage == 'favicon.ico': resp = "HTTP/1.1 404 wtf";
-        elif reqpage == 'knock': resp = heads+knockpage;
-        elif reqpage == 'close': resp = heads+closepage
+        elif reqpage == 'knock': resp += knockpage;
+        elif reqpage == 'close': resp += closepage
         elif reqpage == 'closesubmit':
-            print(reqdata)
             password = search('password\=[a-zA-Z]*.*$', reqdata)
             if (password): 
-                password = password.group()[9:]
-                if password == passwordtoterminate:
-                    resp = heads+termpage
+                if password.group()[9:] == passwordtoterminate:
+                    resp += termpage
                     switchoff = True;
                 else:
-                    resp = heads+knockpage
+                    resp += knockpage
         elif reqpage == 'back':
+            input("BACK CAUGHT")
             if search('0<<.*>>', reqdata):
                 messages.append(ctime()[11:-5]+' : '+search('0<<.*>>', reqdata).group()[3:-2]+' Joined')
             elif search('1<<.*>><<.*>>', reqdata):
                 messages.append(ctime()[11:-5]+' : '+search('>><<.*>>', reqdata).group()[4:-2]+' < '+search('<<.*>><<', reqdata).group()[2:-4])
             elif search('listening', reqdata):
-                print("LISTEN CAUGHT##############3");
-            resp = heads+"ACKNOWLEDGED"
-        else: resp = heads+page404
+                print("LISTEN CAUGHT##############");
+            resp += "ACKNOWLEDGED"
+        else: resp += page404
         sock.send(bytes(resp.replace('\r\n', '\\r\\n'), 'utf-8'))
         return switchoff
     
+# -- RECEPTION OF A REQUEST AND EXTRACTING INFO TO BE PASSSED INTO RESPOND FUNCTION
     sock = socket(2, 1);
     sock.bind((host, port))
     sock.listen(5)
     print('Connect clients to %s:%d'%(gethostbyname(gethostname()), port))
-    
-# -- RECEPTION OF A REQUEST AND EXTRACTING INFO TO BE PASSSED INTO RESPOND FUNCTION
-    
     while (True):
-        print("\nawaiting connection");
-        newsock, adr = sock.accept(); print("Connection : %s"%str(adr))
+        print("awaiting connection");
+        newsock, adr = sock.accept(); print("Connection : %s\n"%str(adr))
         httpreq = str(newsock.recv(1024))[2:-1].replace('\\r\\n', '\r\n')
         if httpreq:
             print(httpreq);
@@ -76,7 +74,7 @@ Content-Type: text/html
             if respond(newsock, reqpage, httpreq) or (httpreq == passwordtoterminate):
                 newsock.close()
                 break
-        newsock.close(); print('Connection closed');
+        newsock.close(); print('\nConnection closed');
     sock.close(); print("Server Terminated");
     
 except Exception as e:
